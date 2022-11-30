@@ -2,21 +2,29 @@ import livros from '../models/Livro.js';
 
 const useLivrosController = () => {
   const get = (req, res) => {
-    livros.find((err, livros) => {
-      res.status(200).send(livros);
-    });
+    livros
+      .find()
+      .populate('autor')
+      .exec((err, livros) => {
+        res.status(200).send(livros);
+      });
   };
 
   const getById = (req, res) => {
     const id = req.params.id;
 
-    livros.findById(id, (err, livro) => {
-      if (!err) {
-        res.status(200).send(livro);
-      } else {
-        res.status(404).send({ message: `${err.message} - Id não encontrado` });
-      }
-    });
+    livros
+      .findById(id)
+      .populate('autor', 'nome')
+      .exec((err, livro) => {
+        if (!err) {
+          res.status(200).send(livro);
+        } else {
+          res
+            .status(404)
+            .send({ message: `${err.message} - Id não encontrado` });
+        }
+      });
   };
 
   const post = (req, res) => {
